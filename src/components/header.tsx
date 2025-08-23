@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import Logo from "./logo";
 import { Link } from "react-router-dom";
 
@@ -26,9 +25,12 @@ export default function Header() {
         </a>
       </nav>
 
-      <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2">
+      <Link
+        to={"/login"}
+        className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl px-5 py-2"
+      >
         Get Started
-      </Button>
+      </Link>
     </header>
   );
 }
