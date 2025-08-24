@@ -9,6 +9,10 @@ export default function HomePage() {
 
       <HeroSection />
 
+      <div className="h-screen bg-white"></div>
+      <div className="h-screen bg-black"></div>
+      <div className="h-screen bg-red-500"></div>
+
       <Footer />
     </>
   );

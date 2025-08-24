@@ -1,21 +1,40 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
-
 import AuthLeftSection from "@/components/auth/auth-left-section";
+import { loginSchema } from "@/lib/validation";
+
+type LoginFormInputs = yup.InferType<typeof loginSchema>;
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<LoginFormInputs>({
+    resolver: yupResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormInputs) => {
+    console.log("Login Data:", data);
+    // TODO: Integrate login API here
+    reset();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-xl rounded-2xl bg-white overflow-hidden">
         <AuthLeftSection />
 
-        {/* Right Section */}
         <div className="flex items-center justify-center p-8">
           <Card className="w-full max-w-md border-none shadow-none">
             <CardHeader>
@@ -31,7 +50,7 @@ export default function Login() {
             </CardHeader>
 
             <CardContent>
-              <form className="space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
                   <label htmlFor="email" className="text-gray-700">
                     Email
@@ -41,8 +60,13 @@ export default function Login() {
                     type="email"
                     placeholder="yash.gupta@example.com"
                     className="mt-1"
-                    required
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -54,7 +78,7 @@ export default function Login() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      required
+                      {...register("password")}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -63,13 +87,19 @@ export default function Login() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </span>
                   </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-300"
+                  disabled={isSubmitting}
                 >
-                  Sign In
+                  {isSubmitting ? "Signing In..." : "Sign In"}
                 </Button>
 
                 {/* Divider */}

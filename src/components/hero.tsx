@@ -11,9 +11,8 @@ export default function HeroSection() {
           AI-Powered Legal Assistance for Everyone
         </h1>
         <p className="mt-4 text-lg text-blue-100 max-w-lg">
-          Get instant, accurate, and affordable legal guidance powered by
-          advanced AI technology. Our platform connects you with top lawyers and
-          provides intelligent solutions to all your legal challenges.
+          Get quick, reliable, and affordable legal help at your fingertips.
+          Your trusted legal companion, anytime and anywhere.
         </p>
         <div className="mt-6 flex gap-4">
           <Button className="bg-white text-blue-700 hover:bg-blue-100 rounded-xl px-5 py-3">
@@ -100,7 +99,7 @@ export default function HeroSection() {
         className="bg-gray-100 px-6 md:px-20 py-16 text-center"
       >
         <h3 className="text-3xl font-bold mb-10 text-gray-800">
-          Why Choose LegalEase?
+          Why Choose Legal Assist?
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="p-6 rounded-2xl shadow bg-white hover:shadow-lg transition">
@@ -138,7 +137,7 @@ export default function HeroSection() {
           <Card className="rounded-2xl shadow">
             <CardContent className="p-6">
               <p className="italic text-gray-600">
-                "LegalEase made my business registration seamless and
+                "Legal Assist made my business registration seamless and
                 stress-free!"
               </p>
               <h4 className="mt-4 font-semibold">— Riya Sharma</h4>
