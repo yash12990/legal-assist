@@ -8,6 +8,9 @@ import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/dashboard";
 import ProtectedRoute from "./components/protected-route";
 import { ToastContainer } from "react-toastify";
+import MyQueries from "./pages/my-queries";
+import Profile from "./pages/profile";
+import { DashboardProvider } from "./context/dashboardContext";
 
 function App() {
   return (
@@ -24,27 +27,46 @@ function App() {
         pauseOnHover
         theme="light"
       />
+
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
+        <DashboardProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
 
-            <Route path="/about" element={<AboutUs />} />
+              <Route path="/about" element={<AboutUs />} />
 
-            <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
 
-            <Route path="/signup" element={<SignupPage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/queries"
+                element={
+                  <ProtectedRoute>
+                    <MyQueries />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </DashboardProvider>
       </AuthProvider>
     </div>
   );
