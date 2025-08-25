@@ -25,7 +25,8 @@ Follow the steps below to run the project locally:
 git clone https://github.com/yash12990/legal-assist.git
 
 ### Navigate to the project folder
-cd legal-assist
+cd legal-assist<img width="336" height="726" alt="Screenshot 2025-08-26 at 2 33 16 AM" src="https://github.com/user-attachments/assets/8fa91f1f-324a-43cb-9827-2c3a2d82f50d" />
+
 
 ### Install dependencies
 npm install
