@@ -9,7 +9,7 @@ export default function HeroSection() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="h-[calc(100vh-68px)] flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-16 bg-gradient-to-r from-blue-700 to-blue-500 text-white">
+    <section className="sm:h-[calc(100vh-68px)] flex flex-col md:flex-row items-center justify-between px-6 md:px-20 py-16 bg-gradient-to-r from-blue-700 to-blue-500 text-white">
       <div className="md:w-1/2 text-center md:text-left">
         <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
           Your Personal AI-Powered Legal Assistant

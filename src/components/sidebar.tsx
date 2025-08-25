@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, LayoutDashboard, FileText, User, X } from "lucide-react";
 import Logo from "./logo";
@@ -37,10 +37,10 @@ const Sidebar = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex flex-col gap-y-2">
+          <Link to={"/"} className="flex flex-col gap-y-2">
             <Logo className="w-fit" />
             <h2 className="text-2xl font-bold text-blue-700">LegAssist</h2>
-          </div>
+          </Link>
 
           {/* Close button for mobile */}
           <button
