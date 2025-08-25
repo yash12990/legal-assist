@@ -42,13 +42,13 @@ npm run dev
 
 <img width="1512" height="827" alt="Screenshot 2025-08-26 at 2 31 56 AM" src="https://github.com/user-attachments/assets/a6a6f943-e656-4870-93b4-f9ac5e03fe53" />
 
-<img width="335" height="726" alt="Screenshot 2025-08-26 at 2 30 34 AM" src="https://github.com/user-attachments/assets/29279978-9e5a-404b-b421-afc79a9c79c8" />
-
-<img width="336" height="727" alt="Screenshot 2025-08-26 at 2 30 42 AM" src="https://github.com/user-attachments/assets/f832a7ca-2fda-43dc-9641-f05c064b21bb" />
-
 <img width="333" height="726" alt="Screenshot 2025-08-26 at 2 30 11 AM" src="https://github.com/user-attachments/assets/a806731e-663c-448d-8d12-6da298d4f306" />
 
 <img width="336" height="725" alt="Screenshot 2025-08-26 at 2 30 23 AM" src="https://github.com/user-attachments/assets/caf2406c-d45e-4cbf-8c7f-23d006debcfe" />
+
+<img width="335" height="726" alt="Screenshot 2025-08-26 at 2 30 34 AM" src="https://github.com/user-attachments/assets/29279978-9e5a-404b-b421-afc79a9c79c8" />
+
+<img width="336" height="727" alt="Screenshot 2025-08-26 at 2 30 42 AM" src="https://github.com/user-attachments/assets/f832a7ca-2fda-43dc-9641-f05c064b21bb" />
 
 <img width="1512" height="826" alt="Screenshot 2025-08-26 at 2 32 14 AM" src="https://github.com/user-attachments/assets/727b277d-4b5a-422d-b431-21e71ae38d39" />
 
