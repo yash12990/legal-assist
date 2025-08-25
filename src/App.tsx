@@ -6,6 +6,7 @@ import LoginPage from "./pages/login-page";
 import SignupPage from "./pages/sign-up-page";
 import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/dashboard";
+import ProtectedRoute from "./components/protected-route";
 
 function App() {
   return (
@@ -21,7 +22,14 @@ function App() {
 
             <Route path="/signup" element={<SignupPage />} />
 
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
