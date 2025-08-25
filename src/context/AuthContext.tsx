@@ -1,20 +1,20 @@
 import {
   createContext,
+  useContext,
   useState,
   useEffect,
   type ReactNode,
-  useContext,
 } from "react";
-import type { Query } from "./dashboardContext";
+import { toast } from "react-toastify";
 
-export type User = {
+interface User {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-};
+}
 
-export type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   signup: (data: User) => { success: boolean; message: string };
@@ -24,33 +24,23 @@ export type AuthContextType = {
   ) => { success: boolean; message: string };
   logout: () => void;
   updateUser: (data: Partial<User>) => void;
-};
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
-};
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    return JSON.parse(localStorage.getItem("loggedInUser") || "null");
+  });
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("loggedInUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  const isAuthenticated = !!user;
 
   const signup = (data: User) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const exists = users.find((u: User) => u.email === data.email);
 
-    const existingUser = users.find((u: User) => u.email === data.email);
-    if (existingUser) {
-      return { success: false, message: "Email already exists. Please login." };
+    if (exists) {
+      return { success: false, message: "User already exists!" };
     }
 
     users.push(data);
@@ -58,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("loggedInUser", JSON.stringify(data));
     setUser(data);
 
-    return { success: true, message: "Account created successfully!" };
+    return { success: true, message: "Signup successful! Welcome aboard 🎉" };
   };
 
   const login = (email: string, password: string) => {
@@ -74,68 +64,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("loggedInUser", JSON.stringify(existingUser));
     setUser(existingUser);
 
-    return { success: true, message: "Login successful!" };
+    return {
+      success: true,
+      message: `Welcome back, ${existingUser.firstName}!`,
+    };
   };
 
   const logout = () => {
     localStorage.removeItem("loggedInUser");
     setUser(null);
+    toast.info("You have been logged out.");
   };
 
-  // const updateUser = (updatedData: Partial<User>) => {
-  //   if (!user) return;
-
-  //   // Update logged-in user
-  //   const updatedUser = { ...user, ...updatedData };
-  //   setUser(updatedUser);
-  //   localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
-
-  //   // Update user in users array
-  //   const users = JSON.parse(localStorage.getItem("users") || "[]");
-  //   const updatedUsers = users.map((u: User) =>
-  //     u.email === user.email ? { ...u, ...updatedData } : u
-  //   );
-  //   localStorage.setItem("users", JSON.stringify(updatedUsers));
-  // };
-
-  const updateUser = (updatedData: Partial<User>) => {
+  const updateUser = (data: Partial<User>) => {
     if (!user) return;
-
-    const oldEmail = user.email; // store old email
-
-    // Update logged-in user
-    const updatedUser = { ...user, ...updatedData };
+    const updatedUser = { ...user, ...data };
     setUser(updatedUser);
     localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
 
-    // Update user in users array
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const updatedUsers = users.map((u: User) =>
-      u.email === oldEmail ? { ...u, ...updatedData } : u
+      u.email === user.email ? updatedUser : u
     );
     localStorage.setItem("users", JSON.stringify(updatedUsers));
 
-    // ✅ Update queries in localStorage if email changed
-    if (updatedData.email && updatedData.email !== oldEmail) {
-      const allQueries: Query[] = JSON.parse(
-        localStorage.getItem("queries") || "[]"
-      );
-      const updatedQueries = allQueries.map((q) =>
-        q.userId === oldEmail ? { ...q, userId: updatedData.email! } : q
-      );
-      localStorage.setItem("queries", JSON.stringify(updatedQueries));
-    }
+    toast.success("Profile updated successfully!");
   };
 
-  const value: AuthContextType & { updateUser: (data: Partial<User>) => void } =
-    {
-      user,
-      isAuthenticated: !!user,
-      signup,
-      login,
-      logout,
-      updateUser,
-    };
+  useEffect(() => {
+    const storedUser = JSON.parse(
+      localStorage.getItem("loggedInUser") || "null"
+    );
+    if (storedUser) setUser(storedUser);
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, signup, login, logout, updateUser }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
 };

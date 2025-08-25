@@ -1,121 +1,97 @@
 import {
   createContext,
+  useContext,
   useState,
   useEffect,
   type ReactNode,
-  useContext,
 } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 export type QueryStatus = "Pending" | "In Review" | "Resolved";
 
-export type Query = {
-  date: string;
+export interface Query {
   id: string;
-  status: QueryStatus;
-  text: string;
   userId: string;
-};
+  text: string;
+  status: QueryStatus;
+  date: string;
+}
 
-export type DashboardContextType = {
+interface DashboardContextType {
   queries: Query[];
   addQuery: (text: string) => void;
-  editQuery: (id: string, newText: string) => void;
-  deleteQuery: (id: string) => void;
-  updateStatus: (id: string, status: QueryStatus) => void;
-  clearAll: () => void;
-};
-
-const STORAGE_KEY = "queries";
+  updateQueryStatus: (id: string, status: QueryStatus) => void;
+}
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
   undefined
 );
 
-export const useDashboard = () => {
-  const ctx = useContext(DashboardContext);
-  if (!ctx)
-    throw new Error("useDashboard must be used within DashboardProvider");
-  return ctx;
+const readAllQueriesFromStorage = (): Query[] => {
+  return JSON.parse(localStorage.getItem("queries") || "[]");
 };
 
-function readAllQueriesFromStorage(): Query[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed: Query[] = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
-  const loggedInUser = JSON.parse(
-    localStorage.getItem("loggedInUser") || "null"
-  );
+  const { user } = useAuth();
+  const [queries, setQueries] = useState<Query[]>([]);
 
-  const [queries, setQueries] = useState<Query[]>(() => {
-    if (loggedInUser?.email) {
-      return readAllQueriesFromStorage().filter(
-        (q) => q.userId === loggedInUser.email
-      );
-    }
-    return [];
-  });
-
-  // ✅ Whenever queries change, update localStorage safely
+  // Load queries when user changes
   useEffect(() => {
+    if (!user?.email) {
+      setQueries([]);
+      return;
+    }
+
     const allQueries = readAllQueriesFromStorage();
-    const otherUsersQueries = allQueries.filter(
-      (q) => q.userId !== loggedInUser?.email
-    );
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify([...queries, ...otherUsersQueries])
-    );
-  }, [queries]);
+    const userQueries = allQueries.filter((q) => q.userId === user.email);
+    setQueries(userQueries);
+  }, [user?.email]);
 
   const addQuery = (text: string) => {
-    if (!loggedInUser?.email) return;
+    if (!user?.email) {
+      toast.error("Please log in first!");
+      return;
+    }
 
     const newQuery: Query = {
       id: Date.now().toString(),
-      date: new Date().toLocaleString(),
-      status: "Pending",
+      userId: user.email,
       text,
-      userId: loggedInUser.email,
+      status: "Pending",
+      date: new Date().toISOString(),
     };
-    setQueries((prev) => [newQuery, ...prev]);
+
+    const allQueries = readAllQueriesFromStorage();
+    allQueries.push(newQuery);
+    localStorage.setItem("queries", JSON.stringify(allQueries));
+
+    // Update state instantly
+    setQueries((prev) => [...prev, newQuery]);
   };
 
-  const editQuery = (id: string, newText: string) => {
-    setQueries((prev) =>
-      prev.map((q) => (q.id === id ? { ...q, text: newText } : q))
+  const updateQueryStatus = (id: string, status: QueryStatus) => {
+    const allQueries = readAllQueriesFromStorage();
+    const updatedQueries = allQueries.map((q) =>
+      q.id === id ? { ...q, status } : q
     );
-  };
+    localStorage.setItem("queries", JSON.stringify(updatedQueries));
 
-  const deleteQuery = (id: string) => {
-    setQueries((prev) => prev.filter((q) => q.id !== id));
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    setQueries(userQueries);
   };
-
-  const updateStatus = (id: string, status: QueryStatus) => {
-    setQueries((prev) => prev.map((q) => (q.id === id ? { ...q, status } : q)));
-  };
-
-  const clearAll = () => setQueries([]);
 
   return (
-    <DashboardContext.Provider
-      value={{
-        queries,
-        addQuery,
-        editQuery,
-        deleteQuery,
-        updateStatus,
-        clearAll,
-      }}
-    >
+    <DashboardContext.Provider value={{ queries, addQuery, updateQueryStatus }}>
       {children}
     </DashboardContext.Provider>
   );
+};
+
+export const useDashboard = () => {
+  const context = useContext(DashboardContext);
+  if (!context) {
+    throw new Error("useDashboard must be used within DashboardProvider");
+  }
+  return context;
 };
