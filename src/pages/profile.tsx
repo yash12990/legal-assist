@@ -61,7 +61,7 @@ const Profile = ({ showHeading = true }: Props) => {
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
+          className="fixed inset-0 bg-black/[0.4] bg-opacity-40 z-30 md:hidden"
         />
       )}
 
@@ -70,9 +70,9 @@ const Profile = ({ showHeading = true }: Props) => {
           <h1 className="text-xl font-semibold text-gray-800">Profile</h1>
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="lg:hidden p-2 rounded-lg bg-indigo-100 hover:bg-indigo-200 transition h-10"
           >
-            <Menu size={24} />
+            <Menu size={24} className="text-indigo-600" />
           </button>
         </div>
 

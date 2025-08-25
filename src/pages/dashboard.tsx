@@ -9,7 +9,7 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const { queries } = useDashboard();
   const { user } = useAuth();
 
-  const userQueries = queries.filter((q) => q.userId === user?.email);
+  const userQueries = queries.filter((q) => q.userId === user?.userId);
 
   const total = userQueries.length;
   const pending = userQueries.filter((q) => q.status === "Pending").length;
@@ -54,7 +54,6 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
         />
       </div>
 
-      {/* User Info + Queries */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1 h-[240px]">
           {user ? (
@@ -98,7 +97,6 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
           )}
         </div>
 
-        {/* Queries Card */}
         <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1 flex flex-col  h-[240px]">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
             Your Queries
