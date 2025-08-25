@@ -4,21 +4,24 @@ import HomePage from "./pages/homepage";
 import AboutUs from "./pages/about-us";
 import LoginPage from "./pages/login-page";
 import SignupPage from "./pages/sign-up-page";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
     <div>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
 
-          <Route path="/about" element={<AboutUs />} />
+            <Route path="/about" element={<AboutUs />} />
 
-          <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-          <Route path="/signup" element={<SignupPage />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="/signup" element={<SignupPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
