@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, LayoutDashboard, FileText, User } from "lucide-react";
+import Logo from "./logo";
 
 const Sidebar = () => {
   const { logout } = useAuth();
@@ -16,9 +17,10 @@ const Sidebar = () => {
 
   return (
     <aside className="bg-white shadow-md h-screen w-64 flex flex-col fixed left-0 top-0 p-4 border-r">
-      <h2 className="text-2xl font-bold text-indigo-600 mb-6 text-center">
-        LegAssist
-      </h2>
+      <div className="flex flex-col gap-y-2">
+        <Logo className="w-fit" />
+        <h2 className="text-2xl font-bold text-blue-700 mb-6">LegAssist</h2>
+      </div>
 
       <nav className="flex-1 space-y-2">
         <NavLink

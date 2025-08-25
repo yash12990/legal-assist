@@ -1,18 +1,15 @@
 import { useState } from "react";
+import { useDashboard } from "@/context/dashboardContext";
 
 const QueryForm = () => {
   const [query, setQuery] = useState("");
-  const [queries, setQueries] = useState<string[]>(
-    JSON.parse(localStorage.getItem("queries") || "[]")
-  );
+  const { addQuery } = useDashboard();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-
-    const updatedQueries = [...queries, query];
-    setQueries(updatedQueries);
-    localStorage.setItem("queries", JSON.stringify(updatedQueries));
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    addQuery(trimmed);
     setQuery("");
   };
 
