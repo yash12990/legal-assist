@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import AuthLeftSection from "@/components/auth/auth-left-section";
 import { signupSchema } from "@/lib/validation";
+import { useAuth } from "@/context/AuthContext";
 
 type SignupFormInputs = {
   firstName: string;
@@ -21,6 +22,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const { signup } = useAuth();
 
   const {
     register,
@@ -32,26 +34,16 @@ export default function SignupPage() {
   });
 
   const onSubmit = (data: SignupFormInputs) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    // const { confirmPassword, ...userData } = data;
+    const { ...userData } = data;
+    const result = signup(userData);
 
-    const existingUser = users.find(
-      (user: SignupFormInputs) => user.email === data.email
-    );
-    if (existingUser) {
-      alert("Email already exists. Please login.");
-      return;
+    if (result.success) {
+      alert(result.message);
+      navigate("/dashboard");
+    } else {
+      alert(result.message);
     }
-
-    users.push({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
-    });
-    localStorage.setItem("users", JSON.stringify(users));
-
-    alert("Account created successfully!");
-    navigate("/login");
   };
 
   return (

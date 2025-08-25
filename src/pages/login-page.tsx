@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import AuthLeftSection from "@/components/auth/auth-left-section";
 import { loginSchema } from "@/lib/validation";
+import { useAuth } from "@/context/AuthContext";
 
 type LoginFormInputs = {
   email: string;
@@ -17,6 +18,7 @@ type LoginFormInputs = {
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
@@ -28,20 +30,14 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const result = login(data.email, data.password);
 
-    const existingUser = users.find(
-      (user: LoginFormInputs) =>
-        user.email === data.email && user.password === data.password
-    );
-
-    if (!existingUser) {
-      alert("Invalid email or password");
-      return;
+    if (result.success) {
+      alert(result.message);
+      navigate("/dashboard");
+    } else {
+      alert(result.message);
     }
-
-    localStorage.setItem("loggedInUser", JSON.stringify(existingUser));
-    navigate("/dashboard");
   };
 
   return (
