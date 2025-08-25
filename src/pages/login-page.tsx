@@ -1,21 +1,54 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate, Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
-
 import AuthLeftSection from "@/components/auth/auth-left-section";
+import { loginSchema } from "@/lib/validation";
+
+type LoginFormInputs = {
+  email: string;
+  password: string;
+};
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    resolver: yupResolver(loginSchema),
+    mode: "onChange",
+  });
+
+  const onSubmit = (data: LoginFormInputs) => {
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const existingUser = users.find(
+      (user: LoginFormInputs) =>
+        user.email === data.email && user.password === data.password
+    );
+
+    if (!existingUser) {
+      alert("Invalid email or password");
+      return;
+    }
+
+    localStorage.setItem("loggedInUser", JSON.stringify(existingUser));
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 shadow-xl rounded-2xl bg-white overflow-hidden">
         <AuthLeftSection />
 
-        {/* Right Section */}
         <div className="flex items-center justify-center p-8">
           <Card className="w-full max-w-md border-none shadow-none">
             <CardHeader>
@@ -31,7 +64,7 @@ export default function Login() {
             </CardHeader>
 
             <CardContent>
-              <form className="space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
                   <label htmlFor="email" className="text-gray-700">
                     Email
@@ -41,8 +74,13 @@ export default function Login() {
                     type="email"
                     placeholder="yash.gupta@example.com"
                     className="mt-1"
-                    required
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-[10px] mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -54,7 +92,7 @@ export default function Login() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      required
+                      {...register("password")}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -63,6 +101,11 @@ export default function Login() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </span>
                   </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-[10px] mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <Button
@@ -72,7 +115,6 @@ export default function Login() {
                   Sign In
                 </Button>
 
-                {/* Divider */}
                 <div className="flex items-center gap-3 my-3">
                   <div className="h-[1px] bg-gray-200 flex-1"></div>
                   <span className="text-gray-400 text-sm">or</span>

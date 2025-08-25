@@ -1,14 +1,58 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate, Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
 import AuthLeftSection from "@/components/auth/auth-left-section";
+import { signupSchema } from "@/lib/validation";
+
+type SignupFormInputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormInputs>({
+    resolver: yupResolver(signupSchema),
+    mode: "onChange",
+  });
+
+  const onSubmit = (data: SignupFormInputs) => {
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const existingUser = users.find(
+      (user: SignupFormInputs) => user.email === data.email
+    );
+    if (existingUser) {
+      alert("Email already exists. Please login.");
+      return;
+    }
+
+    users.push({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password,
+    });
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Account created successfully!");
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -28,8 +72,9 @@ export default function SignupPage() {
                 </span>
               </p>
             </CardHeader>
+
             <CardContent>
-              <form className="space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="flex gap-3">
                   <div className="w-1/2">
                     <label htmlFor="firstName" className="text-gray-700">
@@ -40,10 +85,14 @@ export default function SignupPage() {
                       type="text"
                       placeholder="Yash"
                       className="mt-1"
-                      required
+                      {...register("firstName")}
                     />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-[10px] mt-1">
+                        {errors.firstName.message}
+                      </p>
+                    )}
                   </div>
-
                   <div className="w-1/2">
                     <label htmlFor="lastName" className="text-gray-700">
                       Last Name
@@ -53,8 +102,13 @@ export default function SignupPage() {
                       type="text"
                       placeholder="Gupta"
                       className="mt-1"
-                      required
+                      {...register("lastName")}
                     />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-[10px] mt-1">
+                        {errors.lastName.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -67,8 +121,13 @@ export default function SignupPage() {
                     type="email"
                     placeholder="yash.gupta@example.com"
                     className="mt-1"
-                    required
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-[10px] mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -80,7 +139,7 @@ export default function SignupPage() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      required
+                      {...register("password")}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -89,6 +148,11 @@ export default function SignupPage() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </span>
                   </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-[10px] mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -100,7 +164,7 @@ export default function SignupPage() {
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="••••••••"
-                      required
+                      {...register("confirmPassword")}
                     />
                     <span
                       onClick={() =>
@@ -115,6 +179,11 @@ export default function SignupPage() {
                       )}
                     </span>
                   </div>
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-[10px] mt-1">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
                 </div>
 
                 <Button
@@ -124,14 +193,12 @@ export default function SignupPage() {
                   Create Account
                 </Button>
 
-                {/* Divider */}
                 <div className="flex items-center gap-3 my-3">
                   <div className="h-[1px] bg-gray-200 flex-1"></div>
                   <span className="text-gray-400 text-sm">or</span>
                   <div className="h-[1px] bg-gray-200 flex-1"></div>
                 </div>
 
-                {/* Login Link */}
                 <p className="text-center text-sm text-gray-600 mt-4">
                   Already have an account?{" "}
                   <Link
