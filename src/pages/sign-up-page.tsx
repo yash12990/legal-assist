@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 import AuthLeftSection from "@/components/auth/auth-left-section";
 import { signupSchema } from "@/lib/validation";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 type SignupFormInputs = {
   firstName: string;
@@ -30,6 +31,13 @@ export default function SignupPage() {
     formState: { errors },
   } = useForm<SignupFormInputs>({
     resolver: yupResolver(signupSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+    },
     mode: "onChange",
   });
 
@@ -39,10 +47,10 @@ export default function SignupPage() {
     const result = signup(userData);
 
     if (result.success) {
-      alert(result.message);
+      toast(result.message);
       navigate("/dashboard");
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -75,7 +83,7 @@ export default function SignupPage() {
                     <Input
                       id="firstName"
                       type="text"
-                      placeholder="Yash"
+                      placeholder="First name"
                       className="mt-1"
                       {...register("firstName")}
                     />
@@ -92,7 +100,7 @@ export default function SignupPage() {
                     <Input
                       id="lastName"
                       type="text"
-                      placeholder="Gupta"
+                      placeholder="Last name"
                       className="mt-1"
                       {...register("lastName")}
                     />
@@ -111,7 +119,7 @@ export default function SignupPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="yash.gupta@example.com"
+                    placeholder="id@example.com"
                     className="mt-1"
                     {...register("email")}
                   />

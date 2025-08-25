@@ -9,6 +9,7 @@ import { Eye, EyeOff } from "lucide-react";
 import AuthLeftSection from "@/components/auth/auth-left-section";
 import { loginSchema } from "@/lib/validation";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 type LoginFormInputs = {
   email: string;
@@ -32,6 +33,10 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
     mode: "onChange",
   });
 
@@ -39,10 +44,10 @@ export default function Login() {
     const result = login(data.email, data.password);
 
     if (result.success) {
-      alert(result.message);
+      toast(result.message);
       navigate("/dashboard");
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -74,7 +79,7 @@ export default function Login() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="yash.gupta@example.com"
+                    placeholder="id@example.com"
                     className="mt-1"
                     {...register("email")}
                   />
