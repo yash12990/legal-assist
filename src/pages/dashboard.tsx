@@ -56,11 +56,9 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
 
       {/* User Info + Queries */}
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* User Info Card */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1">
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1 h-[240px]">
           {user ? (
             <div className="space-y-5">
-              {/* Avatar & Name */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-indigo-100 text-indigo-600 flex items-center justify-center rounded-full text-lg font-bold shadow-inner">
                   {user.firstName?.charAt(0).toUpperCase() || "U"}
@@ -75,7 +73,6 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 </div>
               </div>
 
-              {/* Email */}
               <div>
                 <p className="text-xs uppercase text-gray-500 tracking-wide">
                   Email
@@ -85,7 +82,6 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
                 </p>
               </div>
 
-              {/* Last Login */}
               <div>
                 <p className="text-xs uppercase text-gray-500 tracking-wide">
                   Last Login
@@ -103,12 +99,12 @@ const DashboardContent = ({ onMenuClick }: { onMenuClick: () => void }) => {
         </div>
 
         {/* Queries Card */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1 flex flex-col">
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-indigo-100 flex-1 flex flex-col  h-[240px]">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
             Your Queries
           </h2>
           {userQueries.length > 0 ? (
-            <div className="flex-1 overflow-y-auto pr-2 max-h-[300px]">
+            <div className="flex-1 overflow-y-auto pr-2 max-h-[170px]">
               <div className="space-y-4">
                 {userQueries.map((query) => (
                   <div
@@ -155,10 +151,8 @@ const Dashboard = () => {
   return (
     <div className="flex relative">
       <DashboardProvider>
-        {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        {/* Main Content */}
         <main className="flex-1 lg:ml-64 p-4 sm:p-6 bg-gray-50 min-h-screen">
           <DashboardContent onMenuClick={() => setSidebarOpen(true)} />
         </main>

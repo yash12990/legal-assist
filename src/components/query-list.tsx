@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useDashboard } from "@/context/dashboardContext";
 
 const QueryList = () => {
-  const { queries, editQuery, deleteQuery, updateStatus } = useDashboard();
+  const { queries, editQuery, deleteQuery, updateQueryStatus } = useDashboard();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
 
@@ -21,7 +21,7 @@ const QueryList = () => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border">
-      <h2 className="text-xl font-semibold mb-4">Saved Legal Queries</h2>
+      {/* <h2 className="text-xl font-semibold mb-4">Saved Legal Queries</h2> */}
 
       {queries.length === 0 ? (
         <p className="text-gray-500">No queries added yet.</p>
@@ -48,7 +48,9 @@ const QueryList = () => {
                   <span>•</span>
                   <select
                     value={q.status}
-                    onChange={(e) => updateStatus(q.id, e.target.value as any)}
+                    onChange={(e) =>
+                      updateQueryStatus(q.id, e.target.value as any)
+                    }
                     className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                       q.status === "Resolved"
                         ? "bg-green-100 text-green-700"

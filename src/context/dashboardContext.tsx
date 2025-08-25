@@ -21,6 +21,8 @@ export interface Query {
 interface DashboardContextType {
   queries: Query[];
   addQuery: (text: string) => void;
+  editQuery: (id: string, newText: string) => void;
+  deleteQuery: (id: string) => void;
   updateQueryStatus: (id: string, status: QueryStatus) => void;
 }
 
@@ -48,6 +50,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     setQueries(userQueries);
   }, [user?.email]);
 
+  // Save new query
   const addQuery = (text: string) => {
     if (!user?.email) {
       toast.error("Please log in first!");
@@ -66,10 +69,34 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     allQueries.push(newQuery);
     localStorage.setItem("queries", JSON.stringify(allQueries));
 
-    // Update state instantly
     setQueries((prev) => [...prev, newQuery]);
   };
 
+  // Edit existing query
+  const editQuery = (id: string, newText: string) => {
+    const allQueries = readAllQueriesFromStorage();
+    const updatedQueries = allQueries.map((q) =>
+      q.id === id ? { ...q, text: newText } : q
+    );
+    localStorage.setItem("queries", JSON.stringify(updatedQueries));
+
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    setQueries(userQueries);
+    toast.success("Query updated!");
+  };
+
+  // Delete query
+  const deleteQuery = (id: string) => {
+    const allQueries = readAllQueriesFromStorage();
+    const updatedQueries = allQueries.filter((q) => q.id !== id);
+    localStorage.setItem("queries", JSON.stringify(updatedQueries));
+
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    setQueries(userQueries);
+    toast.success("Query deleted!");
+  };
+
+  // Update query status
   const updateQueryStatus = (id: string, status: QueryStatus) => {
     const allQueries = readAllQueriesFromStorage();
     const updatedQueries = allQueries.map((q) =>
@@ -82,7 +109,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <DashboardContext.Provider value={{ queries, addQuery, updateQueryStatus }}>
+    <DashboardContext.Provider
+      value={{ queries, addQuery, editQuery, deleteQuery, updateQueryStatus }}
+    >
       {children}
     </DashboardContext.Provider>
   );
