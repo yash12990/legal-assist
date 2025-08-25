@@ -40,26 +40,26 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   // Load queries when user changes
   useEffect(() => {
-    if (!user?.email) {
+    if (!user?.userId) {
       setQueries([]);
       return;
     }
 
     const allQueries = readAllQueriesFromStorage();
-    const userQueries = allQueries.filter((q) => q.userId === user.email);
+    const userQueries = allQueries.filter((q) => q.userId === user.userId);
     setQueries(userQueries);
-  }, [user?.email]);
+  }, [user?.userId]);
 
   // Save new query
   const addQuery = (text: string) => {
-    if (!user?.email) {
+    if (!user?.userId) {
       toast.error("Please log in first!");
       return;
     }
 
     const newQuery: Query = {
       id: Date.now().toString(),
-      userId: user.email,
+      userId: user.userId,
       text,
       status: "Pending",
       date: new Date().toISOString(),
@@ -80,7 +80,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     );
     localStorage.setItem("queries", JSON.stringify(updatedQueries));
 
-    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.userId);
     setQueries(userQueries);
     toast.success("Query updated!");
   };
@@ -91,7 +91,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     const updatedQueries = allQueries.filter((q) => q.id !== id);
     localStorage.setItem("queries", JSON.stringify(updatedQueries));
 
-    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.userId);
     setQueries(userQueries);
     toast.success("Query deleted!");
   };
@@ -104,7 +104,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     );
     localStorage.setItem("queries", JSON.stringify(updatedQueries));
 
-    const userQueries = updatedQueries.filter((q) => q.userId === user?.email);
+    const userQueries = updatedQueries.filter((q) => q.userId === user?.userId);
     setQueries(userQueries);
   };
 

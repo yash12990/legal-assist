@@ -6,8 +6,10 @@ import {
   type ReactNode,
 } from "react";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 interface User {
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -17,7 +19,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signup: (data: User) => { success: boolean; message: string };
+  signup: (data: Omit<User, "userId">) => { success: boolean; message: string };
   login: (
     email: string,
     password: string
@@ -35,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = !!user;
 
-  const signup = (data: User) => {
+  const signup = (data: Omit<User, "userId">) => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const exists = users.find((u: User) => u.email === data.email);
 
@@ -43,10 +45,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, message: "User already exists!" };
     }
 
-    users.push(data);
+    const newUser = { ...data, userId: uuidv4() }; // ✅ Assign unique ID
+    users.push(newUser);
+
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", JSON.stringify(data));
-    setUser(data);
+    localStorage.setItem("loggedInUser", JSON.stringify(newUser));
+    setUser(newUser);
 
     return { success: true, message: "Signup successful! Welcome aboard 🎉" };
   };
@@ -78,13 +82,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updateUser = (data: Partial<User>) => {
     if (!user) return;
+
     const updatedUser = { ...user, ...data };
     setUser(updatedUser);
     localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
 
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const updatedUsers = users.map((u: User) =>
-      u.email === user.email ? updatedUser : u
+      u.userId === user.userId ? updatedUser : u
     );
     localStorage.setItem("users", JSON.stringify(updatedUsers));
 
