@@ -5,6 +5,7 @@ import AboutUs from "./pages/about-us";
 import LoginPage from "./pages/login-page";
 import SignupPage from "./pages/sign-up-page";
 import { AuthProvider } from "./context/AuthContext";
+import Dashboard from "./pages/dashboard";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
 
             <Route path="/signup" element={<SignupPage />} />
+
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
