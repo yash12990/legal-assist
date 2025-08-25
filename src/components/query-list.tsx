@@ -20,7 +20,7 @@ const QueryList = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border">
+    <div className="bg-white sm:p-6 p-0 rounded-2xl shadow-sm border">
       {/* <h2 className="text-xl font-semibold mb-4">Saved Legal Queries</h2> */}
 
       {queries.length === 0 ? (
@@ -30,7 +30,7 @@ const QueryList = () => {
           {queries.map((q) => (
             <li
               key={q.id}
-              className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg border border-indigo-100"
+              className="flex items-center justify-between sm:p-4 p-3 bg-indigo-50 rounded-lg border border-indigo-100"
             >
               <div className="flex flex-col">
                 {editingId === q.id ? (
@@ -44,7 +44,7 @@ const QueryList = () => {
                 )}
 
                 <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                  <span>{q.date}</span>
+                  <span>{new Date(q.date).toDateString()}</span>
                   <span>•</span>
                   <select
                     value={q.status}
