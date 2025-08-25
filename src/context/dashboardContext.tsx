@@ -22,7 +22,7 @@ export type DashboardContextType = {
   editQuery: (id: string, newText: string) => void;
   deleteQuery: (id: string) => void;
   updateStatus: (id: string, status: QueryStatus) => void;
-  clearAll: () => void; // handy for testing/reset
+  clearAll: () => void;
 };
 
 const STORAGE_KEY = "queries";
@@ -43,38 +43,41 @@ function readAllQueriesFromStorage(): Query[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed: Query[] = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
-}
-
-function readQueriesForUser(userId: string): Query[] {
-  return readAllQueriesFromStorage().filter((q) => q.userId === userId);
 }
 
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const loggedInUser = JSON.parse(
     localStorage.getItem("loggedInUser") || "null"
   );
-  const [queries, setQueries] = useState<Query[]>(
-    readQueriesForUser(loggedInUser.email)
-  );
 
+  const [queries, setQueries] = useState<Query[]>(() => {
+    if (loggedInUser?.email) {
+      return readAllQueriesFromStorage().filter(
+        (q) => q.userId === loggedInUser.email
+      );
+    }
+    return [];
+  });
+
+  // ✅ Whenever queries change, update localStorage safely
   useEffect(() => {
     const allQueries = readAllQueriesFromStorage();
-
     const otherUsersQueries = allQueries.filter(
-      (q) => q.userId !== loggedInUser.email
+      (q) => q.userId !== loggedInUser?.email
     );
-
-    const updated = [...queries, ...otherUsersQueries];
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  }, [queries, loggedInUser.email]);
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([...queries, ...otherUsersQueries])
+    );
+  }, [queries]);
 
   const addQuery = (text: string) => {
+    if (!loggedInUser?.email) return;
+
     const newQuery: Query = {
       id: Date.now().toString(),
       date: new Date().toLocaleString(),
