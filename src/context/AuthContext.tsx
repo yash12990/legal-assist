@@ -5,6 +5,7 @@ import {
   type ReactNode,
   useContext,
 } from "react";
+import type { Query } from "./dashboardContext";
 
 export type User = {
   firstName: string;
@@ -37,7 +38,6 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // Load user from localStorage when app starts
   useEffect(() => {
     const storedUser = localStorage.getItem("loggedInUser");
     if (storedUser) {
@@ -82,9 +82,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
-  // ✅ New updateUser function
+  // const updateUser = (updatedData: Partial<User>) => {
+  //   if (!user) return;
+
+  //   // Update logged-in user
+  //   const updatedUser = { ...user, ...updatedData };
+  //   setUser(updatedUser);
+  //   localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
+
+  //   // Update user in users array
+  //   const users = JSON.parse(localStorage.getItem("users") || "[]");
+  //   const updatedUsers = users.map((u: User) =>
+  //     u.email === user.email ? { ...u, ...updatedData } : u
+  //   );
+  //   localStorage.setItem("users", JSON.stringify(updatedUsers));
+  // };
+
   const updateUser = (updatedData: Partial<User>) => {
     if (!user) return;
+
+    const oldEmail = user.email; // store old email
 
     // Update logged-in user
     const updatedUser = { ...user, ...updatedData };
@@ -94,9 +111,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Update user in users array
     const users = JSON.parse(localStorage.getItem("users") || "[]");
     const updatedUsers = users.map((u: User) =>
-      u.email === user.email ? { ...u, ...updatedData } : u
+      u.email === oldEmail ? { ...u, ...updatedData } : u
     );
     localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    // ✅ Update queries in localStorage if email changed
+    if (updatedData.email && updatedData.email !== oldEmail) {
+      const allQueries: Query[] = JSON.parse(
+        localStorage.getItem("queries") || "[]"
+      );
+      const updatedQueries = allQueries.map((q) =>
+        q.userId === oldEmail ? { ...q, userId: updatedData.email! } : q
+      );
+      localStorage.setItem("queries", JSON.stringify(updatedQueries));
+    }
   };
 
   const value: AuthContextType & { updateUser: (data: Partial<User>) => void } =

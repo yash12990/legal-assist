@@ -25,7 +25,7 @@ export default function Header() {
           <a href="#services" className="hover:text-blue-600 transition-colors">
             Services
           </a>
-          <a href="#about" className="hover:text-blue-600 transition-colors">
+          <a href="/about" className="hover:text-blue-600 transition-colors">
             About
           </a>
         </nav>
