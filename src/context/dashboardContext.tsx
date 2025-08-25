@@ -13,6 +13,7 @@ export type Query = {
   id: string;
   status: QueryStatus;
   text: string;
+  userId: string;
 };
 
 export type DashboardContextType = {
@@ -37,43 +38,41 @@ export const useDashboard = () => {
   return ctx;
 };
 
-// Safely parse JSON + migrate any legacy formats
-function readQueriesFromStorage(): Query[] {
+function readAllQueriesFromStorage(): Query[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw);
-
+    const parsed: Query[] = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-
-    // If previous implementation stored plain strings, migrate them
-    if (parsed.length > 0 && typeof parsed[0] === "string") {
-      const now = Date.now();
-      return (parsed as string[]).map((text, i) => ({
-        id: `${now}-${i}`,
-        text,
-        status: "Pending" as const,
-        date: new Date().toLocaleString(),
-      }));
-    }
-
-    // Assume it's already the correct shape
-    return parsed as Query[];
+    return parsed;
   } catch {
     return [];
   }
 }
 
+function readQueriesForUser(userId: string): Query[] {
+  return readAllQueriesFromStorage().filter((q) => q.userId === userId);
+}
+
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
-  // ✅ Initialize from localStorage BEFORE first render (prevents wipe)
-  const [queries, setQueries] = useState<Query[]>(() =>
-    readQueriesFromStorage()
+  const loggedInUser = JSON.parse(
+    localStorage.getItem("loggedInUser") || "null"
+  );
+  const [queries, setQueries] = useState<Query[]>(
+    readQueriesForUser(loggedInUser.email)
   );
 
-  // ✅ Persist any updates
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(queries));
-  }, [queries]);
+    const allQueries = readAllQueriesFromStorage();
+
+    const otherUsersQueries = allQueries.filter(
+      (q) => q.userId !== loggedInUser.email
+    );
+
+    const updated = [...queries, ...otherUsersQueries];
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  }, [queries, loggedInUser.email]);
 
   const addQuery = (text: string) => {
     const newQuery: Query = {
@@ -81,8 +80,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       date: new Date().toLocaleString(),
       status: "Pending",
       text,
+      userId: loggedInUser.email,
     };
-    // Prepend so newest shows first (feel free to change order)
     setQueries((prev) => [newQuery, ...prev]);
   };
 

@@ -21,14 +21,12 @@ const Dashboard = () => {
             Manage your legal queries and explore resources.
           </p>
 
-          {/* Stats Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <StatsCard title="Total Queries" value="5" />
             <StatsCard title="Pending Queries" value="2" />
             <StatsCard title="Resolved Queries" value="3" />
           </div>
 
-          {/* Query Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <QueryForm />
             <QueryList />
