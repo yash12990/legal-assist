@@ -22,6 +22,7 @@ export type AuthContextType = {
     password: string
   ) => { success: boolean; message: string };
   logout: () => void;
+  updateUser: (data: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,13 +82,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    signup,
-    login,
-    logout,
+  // ✅ New updateUser function
+  const updateUser = (updatedData: Partial<User>) => {
+    if (!user) return;
+
+    // Update logged-in user
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
+
+    // Update user in users array
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.map((u: User) =>
+      u.email === user.email ? { ...u, ...updatedData } : u
+    );
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
   };
+
+  const value: AuthContextType & { updateUser: (data: Partial<User>) => void } =
+    {
+      user,
+      isAuthenticated: !!user,
+      signup,
+      login,
+      logout,
+      updateUser,
+    };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -2,8 +2,9 @@ import QueryForm from "@/components/query-form";
 import QueryList from "@/components/query-list";
 import Sidebar from "@/components/sidebar";
 import StatsCard from "@/components/stats-card";
-import { useAuth } from "@/context/AuthContext";
 import { DashboardProvider } from "@/context/dashboardContext";
+import ProfileSection from "@/components/profile-section";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -21,6 +22,10 @@ const Dashboard = () => {
             Manage your legal queries and explore resources.
           </p>
 
+          {/* Profile Section */}
+          <ProfileSection />
+
+          {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <StatsCard title="Total Queries" value="5" />
             <StatsCard title="Pending Queries" value="2" />

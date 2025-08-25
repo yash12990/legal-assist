@@ -30,3 +30,15 @@ export const signupSchema = yup.object().shape({
     .oneOf([yup.ref("password")], "Passwords must match")
     .required("Confirm password is required"),
 });
+
+export const profileSchema = yup.object().shape({
+  firstName: yup
+    .string()
+    .max(25, "Character limit exceeded")
+    .required("First name is required"),
+  lastName: yup
+    .string()
+    .max(25, "Character limit exceeded")
+    .required("Last name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+});
